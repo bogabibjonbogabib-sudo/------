@@ -96,10 +96,25 @@
 
   function renderLogin() {
     root.innerHTML = `<main class="login-shell">
-      <section class="login-visual"><div class="brand-row"><img src="images.jfif" alt="Нишони Тоҷикистон"><div class="brand-name">КОЛЛЕҶИ МИЛИТСИЯИ ВКД<span>ҶУМҲУРИИ ТОҶИКИСТОН</span></div></div><div class="visual-copy"><div class="eyebrow">Низоми электронии таълим</div><h1>Имтиҳон.<br>Адолат.<br>Дониш.</h1><p>Муҳити рақамӣ барои гузаронидани имтиҳонҳои нимсола ва баҳодиҳии шаффофи дониш.</p></div><div class="visual-foot"><span>ДУШАНБЕ · ТОҶИКИСТОН</span><span>ТАҲСИЛОТИ КАСБӢ</span></div></section>
+      <section class="login-visual"><div class="brand-row"><img src="images.jfif" alt="Нишони Тоҷикистон"><div class="brand-name">КОЛЛЕҶИ МИЛИТСИЯИ ВКД<span>ҶУМҲУРИИ ТОҶИКИСТОН</span></div></div><div class="visual-copy"><div class="eyebrow">Низоми электронии таълим</div><h1>Маркази тестии МДТ<br>Коллеҷи милитсия</h1><p>Муҳити рақамӣ барои гузаронидани имтиҳонҳои нимсола ва баҳодиҳии шаффофи дониш.</p></div><div class="visual-foot"><span>ДУШАНБЕ · ТОҶИКИСТОН</span><span>ТАҲСИЛОТИ КАСБӢ</span></div></section>
       <section class="login-main"><div class="login-card"><div class="mobile-brand"><img src="images.jfif" alt="Нишони Тоҷикистон"><strong>КОЛЛЕҶИ МИЛИТСИЯИ ВКД<span>ҶУМҲУРИИ ТОҶИКИСТОН</span></strong></div><div class="login-kicker">Портали имтиҳонӣ</div><h2>Воридшавӣ</h2><p class="login-sub">Барои идома маълумоти ҳисоби худро ворид кунед.</p>
-      <form id="login-form"><div class="field"><label for="login">Логин</label><input id="login" name="login" autocomplete="username" placeholder="Рақами донишҷӯ ё логин" required></div><div class="field"><label for="password">Рамз</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Рамзи воридшавӣ" required></div><div id="login-error" class="login-error" aria-live="polite"></div><button class="btn btn-block" type="submit">Ворид шудан <span aria-hidden="true">→</span></button></form></div></section></main>`;
+      <form id="login-form"><div class="field"><label for="login">Логин</label><input id="login" name="login" autocomplete="username" placeholder="Рақами донишҷӯ ё логин" required></div><div class="field"><label for="password">Рамз</label><div class="password-control"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Рамзи воридшавӣ" required><button class="password-toggle" type="button" data-password-toggle aria-label="Намоиши рамз" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div id="login-error" class="login-error" aria-live="polite"></div><button class="btn btn-block" type="submit">Ворид шудан <span aria-hidden="true">→</span></button></form></div></section></main>`;
     root.querySelector('#login-form').addEventListener('submit', login);
+    bindPasswordToggles(root);
+  }
+
+  function bindPasswordToggles(container) {
+    container.querySelectorAll('[data-password-toggle]').forEach(button => button.addEventListener('click', () => {
+      const input = button.closest('.password-control')?.querySelector('input');
+      if (!input) return;
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(visible));
+      button.setAttribute('aria-label', visible ? 'Пинҳон кардани рамз' : 'Намоиши рамз');
+      button.innerHTML = visible
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a16 16 0 0 1-3.1 3.8M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7a10.8 10.8 0 0 0 3-.4"/></svg>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    }));
   }
 
   async function login(event) {
@@ -222,12 +237,13 @@
       const options=Array.from({length:4},(_,index)=>`<div class="field"><label>Ҷавоби ${letters[index]}</label><input name="option${index}" maxlength="500" required></div>`).join('');
       title='Иловаи саволи тестӣ';fields=`<div class="field"><label>Фан</label><select name="subject" required>${subjects().map(subject=>`<option value="${esc(subject)}">${esc(subject)}</option>`).join('')}</select></div><div class="field"><label>Матни савол</label><textarea name="text" maxlength="2000" required placeholder="Саволро нависед..."></textarea></div>${options}<div class="field"><label>Ҷавоби дуруст</label><select name="correct">${letters.map((letter,index)=>`<option value="${index}">${letter}</option>`).join('')}</select></div>`;submit='Сабти савол';
     } else {
-      title='Иловаи донишҷӯ';fields=`<div class="field"><label>Номи пурра</label><input name="name" maxlength="160" required></div><div class="field-row"><div class="field"><label>Логин</label><input name="username" minlength="3" maxlength="64" pattern="[A-Za-z0-9._-]+" required></div><div class="field"><label>Рамзи ибтидоӣ</label><input name="password" type="password" minlength="8" required></div></div><div class="field"><label>Гурӯҳ</label><select name="group" required><option value="">Гурӯҳро интихоб кунед</option>${data.groups.map(group=>`<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></div>`;submit='Иловаи донишҷӯ';
+      title='Иловаи донишҷӯ';fields=`<div class="field"><label>Номи пурра</label><input name="name" maxlength="160" required></div><div class="field-row"><div class="field"><label>Логин</label><input name="username" minlength="3" maxlength="64" pattern="[A-Za-z0-9._-]+" required></div><div class="field"><label>Рамзи ибтидоӣ</label><div class="password-control"><input name="password" type="password" minlength="8" required><button class="password-toggle" type="button" data-password-toggle aria-label="Намоиши рамз" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div></div><div class="field"><label>Гурӯҳ</label><select name="group" required><option value="">Гурӯҳро интихоб кунед</option>${data.groups.map(group=>`<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></div>`;submit='Иловаи донишҷӯ';
     }
     modalRoot.innerHTML=`<div class="modal-backdrop" data-dismiss><section class="modal" role="dialog" aria-modal="true" aria-label="${title}"><div class="modal-head"><h2>${title}</h2><button class="modal-close" data-close aria-label="Пӯшидан">×</button></div><form id="modal-form"><div class="modal-content">${fields}<div class="login-error" id="modal-error"></div></div><div class="modal-foot"><button type="button" class="btn btn-outline" data-close>Бекор кардан</button><button class="btn" type="submit">${submit}</button></div></form></section></div>`;
     modalRoot.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',closeModal));
     modalRoot.querySelector('[data-dismiss]').addEventListener('click',event=>{if(event.target===event.currentTarget)closeModal();});
     modalRoot.querySelector('#modal-form').addEventListener('submit',event=>saveModal(event,type));
+    bindPasswordToggles(modalRoot);
     modalRoot.querySelector('input')?.focus();
   }
   function closeModal() { modalRoot.innerHTML=''; }
